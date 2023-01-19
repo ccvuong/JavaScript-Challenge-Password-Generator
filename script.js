@@ -1,13 +1,13 @@
 // DOM elements
-var resultsEl = document.getElementById('result');
-var lengthEl = document.getElementById('pw-length');
+var results = document.getElementById('resultLocation');
+var passowrdLength = document.getElementById('pw-length');
 // selection id's
-var uppercaseEl = document.getElementById('includeUppercase');
-var lowercaseEl = document.getElementById('includeLowercase');
-var numbersEl = document.getElementById('includeNumbers');
-var symbolsEl = document.getElementById('includeSymbols');
+var uppercaseLetters = document.getElementById('includeUppercase');
+var lowercaseLetters = document.getElementById('includeLowercase');
+var numbersIncluded = document.getElementById('includeNumbers');
+var symbolsIncluded = document.getElementById('includeSymbols');
 // btn id=generate
-var generateEl = document.getElementById('generate');
+var generateEl = document.getElementById('generate-btn');
 
 var randomFunc = {
   lower: getRandomLower,
@@ -16,37 +16,46 @@ var randomFunc = {
   symbol: getRandomSymbol,
 };
 
-// Event Listener to see if the checkboxes are marked/not
-generateEl.addEventListener('click', () => {
-  var length = +lengthEl.value;
-  var lower = lowercaseEl.checked;
-  var upper = uppercaseEl.checked;
-  var number = numbersEl.checked;
-  var symbol = symbolsEl.checked;
 
-  resultsEl.innerText = generatePassword(lower, upper, number, symbol, length);
+
+
+// The Event Listener looks for what the user checkboxes;
+generateEl.addEventListener('click', function () {
+  var length = +passowrdLength.value;
+  var lower = uppercaseLetters.checked;
+  var upper = lowercaseLetters.checked;
+  var number = numbersIncluded.checked;
+  var symbol = symbolsIncluded.checked;
+
+  results.innerText = generatePassword(lower, upper, number, symbol, length);
 });
 
-// Generate PW function
+
+
+
+// Generates the password 
 function generatePassword (lower, upper, number, symbol, length) {
-  let generatePassword = '';
+  var generatePassword = '';
 
   var typesCount = lower + upper + number + symbol;
   
-  // Filters out unchecked items
-  var typesArray = [{lower}, {upper}, {number}, {symbol}].filter (item => Object.values(item) [0]);
+  // Checks to see which checkboxes were not marked and filters them out;
+  var typesArray = [{lower}, {upper}, {number}, {symbol}].filter (function(item) { return Object.values(item) [0]});
 
   if (typesCount === 0) {
     return '';
   }
 
-  // Generating the different characters
+  // Then it will generate the different characters/letters;
+  // The for loop will look for what the user checkboxed and the filters then make the password;
   for (let i = 0; i < length; i += typesCount) {
-    typesArray.forEach(type => {
-      var funcName = Object.keys(type) [0];
 
+    for(let j = 0; j < typesArray.length; j++) {
+      var funcName = Object.keys(typesArray[j]) [0];
+      
       generatePassword += randomFunc[funcName] ();
-    });
+    };
+    
   }
 
   var finalPassword = generatePassword.slice(0, length);
@@ -55,7 +64,17 @@ function generatePassword (lower, upper, number, symbol, length) {
 
 }
 
-// Generate functions! 26 Letters, 10 numbers
+
+
+// Fuctions will use ASCII to represent the corresponding numbers to letters, numbers, and symbols on the browser;
+
+// Math.floor will round DOWN a number, making it a whole number;
+// Example: the generated result is 9.5 and with Math.floor that will = 9 (a whole intergar instead);
+
+// Math.floor(Math.random() * 26(amount of letters in the alphabet) + (ASCII number for the letter); 
+// The Lower,Upper functions will grab a random letter from 26 letters, starting from the ASCII letter;
+
+
 function getRandomLower () {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 97);
 }
@@ -64,9 +83,15 @@ function getRandomUpper () {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
 }
 
+// Math.floor(Math.random() * 10(numbers 0-9) + (ASCII number for the number); 
+// The number function will grab a random number from 10 numbers, starting from the ASCII number;
+
 function getRandomNumber () {
   return String.fromCharCode(Math.floor(Math.random() * 10) + 48);
 }
+
+// Math.floor(Math.random() * symbols.length; 
+// The symbol function will grab a random symbol from the var symbols listed;
 
 function getRandomSymbol () {
   var symbols = '!@#$%^&*(){}+<>/,';
